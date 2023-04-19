@@ -11,11 +11,11 @@ fastify.register(cors);
 
 const PORT = 8000;
 
-fastify.get('/api/vans', function (request, reply) {
-  reply.send({ vans });
-});
-
 async function vansRoute(fastify, options) {
+  fastify.get('/api/vans', function (request, reply) {
+    reply.send({ vans });
+  });
+
   fastify.get('/api/vans/:id', (request, reply) => {
     const { id } = request.params;
 
