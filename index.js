@@ -1,7 +1,10 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import { promisify } from 'node:util';
 
 import { vans, users } from './data.js';
+
+const delay = promisify(setTimeout);
 
 const fastify = Fastify({
   logger: true,
@@ -11,8 +14,10 @@ fastify.register(cors);
 
 const PORT = 8000;
 
-async function vansRoute(fastify, options) {
-  fastify.get('/api/vans', function (request, reply) {
+async function vansRoute(fastify, _) {
+  fastify.get('/api/vans', async function (_, reply) {
+    await delay(1000);
+
     reply.send({ vans });
   });
 
@@ -21,15 +26,16 @@ async function vansRoute(fastify, options) {
 
     const van = vans.filter(v => v.id === id);
 
-    return reply.send({ vans: van });
+    reply.send({ vans: van });
   });
 
-  fastify.get('/api/host/vans', (request, reply) => {
+  fastify.get('/api/host/vans', async (request, reply) => {
+    await delay(500);
     const { hostId = '123' } = request.params;
 
     const hostVans = vans.filter(v => v.hostId === hostId);
 
-    return reply.send({ vans: hostVans });
+    reply.send({ vans: hostVans });
   });
 
   fastify.get('/api/host/vans/:id', (request, reply) => {
@@ -37,11 +43,11 @@ async function vansRoute(fastify, options) {
 
     const van = vans.filter(v => v.hostId === hostId && v.id === id);
 
-    return reply.send({ vans: van });
+    reply.send({ vans: van });
   });
 }
 
-async function usersRoute(fastify, options) {
+async function usersRoute(fastify, _) {
   fastify.post('/login', (request, reply) => {
     const { email, password } = JSON.parse(request.body);
 
